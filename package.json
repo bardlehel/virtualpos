@@ -1,0 +1,33 @@
+{
+  "private": true,
+  "name": "virtualpos",
+  "description": "Client API for Virtual POS Service",
+  "version": "0.0.1",
+  "author": "Lehel Kovach",
+  "license": "MIT",
+  "keywords": [
+
+  ],
+  "dependencies": {
+    "requirejs": "latest"
+  },
+  "devDependencies": {
+    "chai": "latest",
+    "chai-as-promised": "latest",
+    "karma": "latest",
+    "karma-chai": "latest",
+    "karma-chai-as-promised": "latest",
+    "karma-html-reporter": "latest",
+    "karma-mocha": "latest",
+    "karma-phantomjs2-launcher": "latest",
+    "karma-requirejs": "latest"
+  },
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": {
+    "url": ""
+  }
+}
