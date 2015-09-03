@@ -10,7 +10,6 @@
         //_sourceURL: the endpoint for the collection of POS items
         //jsonObj (optional):  supplied data for the object (if not supplied, call load() method to populate the object with data)
         var POSObject = function(_apiKey, _sourceURL, jsonObj) {
-            console.log('posobject construction');
             this.objectName = 'POSObject';
             this.dataPath = '';
             this.data = jsonObj;  //let data be public so client can set json object values directly
@@ -37,25 +36,23 @@
             //returns a Promise that resolves with id of item after POST returns successful
             this.create = function(jsonObj){
                 return new Promise(function(resolve, reject) {
-
                     if(jsonObj == undefined) {
                         reject(new Error("invalid param"));
                         return;
                     }
 
                     restAPI
-                        .oneUrl(sourceURL)
+                        .allUrl(me.objectName, sourceURL)
                         .post(jsonObj)
                         .then(
                             function(response) {
-                                var entity = response.body();
-                                me.data = entity.data();
-                                resolve(me.data);
+                                me.data = response.body();
+                                resolve(me.data.id);
                             },
                             function(response){
                                 reject(new Error("failed to create item"));
                             }
-                        );
+                    ).catch(function(e){console.log('post exception')});
                 });
             };
 
@@ -65,7 +62,6 @@
             //returns: Promise that resolves when the data is loaded
             this.load = function() {
                 return new Promise(function(resolve, reject) {
-                    console.log('POSObject.load; URL = ' + sourceURL + me.getId());
                     restAPI
                         .oneUrl(me.objectName, sourceURL + me.getId())
                         .get()
@@ -76,10 +72,9 @@
                             resolve(me.data);
                         },
                         function(response){
-                            console.log('POSObject.load failure');
-                            reject(new Error("failed to load item"));
+                            reject(new Error(me.objectName + ".load: failed to load item:" + response));
                         }
-                    ).catch(function(e){console.log('POSObject.load exception'); throw e;});
+                    ).catch(function(e){console.log(me.objectName + ".load: exception:" + e.message); throw e;});
                 });
             }
 
@@ -89,14 +84,10 @@
                 return new Promise(function(resolve, reject) {
                     restAPI
                         .oneUrl(sourceURL + me.getId())
-                        .get()
+                        .put(me.data)
                         .then(
                         function(response) {
-                            var entity = response.body();
-                            var eData = entity.data();
-                            _.extend(eData, me.data);
-                            entity.save();
-                            resolve(me.data);
+                            resolve(entity.data());
                         },
                         function(response){
                             reject(new Error("failed to load item"));

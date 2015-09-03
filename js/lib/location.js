@@ -6,9 +6,6 @@
         var Location = function(apiKey, locationsURL, jsonLoc) {
             POSObject.call(this, apiKey, locationsURL, jsonLoc);
             this.objectName = 'Location';
-            console.log('location construction');
-
-
             this.tickets = new Tickets(apiKey, locationsURL + jsonLoc.id);
         }
 

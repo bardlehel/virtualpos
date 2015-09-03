@@ -26,7 +26,7 @@
 
             //returns a json array based on contents of elements
             this.getJSON = function() {
-                var jsonArray = []
+                var jsonArray = [];
                 _.each(elements, function(e) {
                     e.load().then(function(json){
                         jsonArray.push(e.data);
@@ -41,8 +41,7 @@
             }
 
             this.getAt = function(index) {
-                console.log(elements);
-                console.log('length = ' + elements.length);
+                if(index == undefined || index < 0 || index >= elements.length) throw new Error(me.objectName + '.getAt: bad param');
                 return elements[index];
             }
 
@@ -56,8 +55,8 @@
             this.load = function() {
                 return new Promise(function (resolve, reject) {
                     restAPI
-                        .oneUrl(me.objectName, sourceURL)
-                        .get()
+                        .allUrl(me.objectName, sourceURL)
+                        .getAll()
                         .then(
                         function (response) {
                             var entity = response.body();
@@ -79,7 +78,7 @@
                                 message2 = respone.body.data();
                             }
 
-                            reject(new Error("failed to load item:" + message + message2));
+                            reject(new Error(me.objectName + ".load failed to load item:" + message + message2));
                         }
                     ).catch(function(e){console.log("exception"); throw e;});
                 } );
@@ -88,14 +87,13 @@
             //used privately to add a POSObject to the elements array without trying to create the object on the server
             var addNoCreate = function(jsonObj) {
                 if(jsonObj == undefined) {
-                    reject(new Error("bad param"));
+                    throw new Error(me.objectName + '.addNoCreate given no param');
                     return;
                 }
 
                 var posObj = new elementClass(apiKey, sourceURL, jsonObj);
-                console.log(posObj);
-
                 elements.push(posObj);
+
                 return posObj;
             }
 
@@ -107,9 +105,7 @@
                         reject(new Error("bad param"));
                         return;
                     }
-
                     var posObj = new elementClass(apiKey, sourceURL, jsonObj);
-
                     posObj
                         .create(jsonObj)
                         .then(
@@ -120,7 +116,7 @@
                             function(e) {
                                 reject(e);
                             }
-                        );
+                    ).catch(function(e){console.log('create exception')});
                 });
             }
 
